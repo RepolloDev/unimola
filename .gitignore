@@ -13,3 +13,4 @@
 *.svg
 !/docs/*.svg
 !/docs/*.png
+!demo.pdf
