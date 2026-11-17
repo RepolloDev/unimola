@@ -125,3 +125,28 @@ Loads a custom `.puml` theme file with vivid colors:
 Invalid PlantUML syntax renders a framed error box without aborting compilation:
 
 #unimola("@startuml\n???\n@enduml")
+
+#pagebreak()
+
+== 8. Document prose with `lorem` and PlantUML
+
+#lorem(45)
+
+#figure(
+  caption: [Service request lifecycle],
+  unimola(
+    height: 5.5cm,
+    ```plantuml
+    @startuml
+    Client -> Auth : Login
+    Auth --> Client : JWT Token
+    Client -> Service : Request + JWT
+    Service --> Client : 200 OK
+    @enduml
+    ```,
+  ),
+) <fig-prose>
+
+As shown in @fig-prose, #lorem(60)
+
+#lorem(40)
