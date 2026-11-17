@@ -1,0 +1,22 @@
+[package]
+name = "unimola-plugin"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Typst WebAssembly plugin bridge for pure-Rust PlantUML SVG rendering via plantuml-core."
+
+[lib]
+name = "unimola"
+crate-type = ["cdylib"]
+
+[dependencies]
+plantuml-core = "=0.5.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+wasm-minimal-protocol = "0.2.1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

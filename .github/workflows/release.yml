@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            plugin/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('plugin/Cargo.lock') }}
+
+      - name: Build WASM plugin
+        working-directory: plugin
+        run: |
+          cargo build --target wasm32-unknown-unknown --release
+          mkdir -p ../assets
+          cp target/wasm32-unknown-unknown/release/unimola.wasm ../assets/unimola.wasm
+
+      - name: Install Typst
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.14.x"
+
+      - name: Verify package and demo compilation
+        run: |
+          VERSION=$(grep '^version' typst.toml | head -n1 | cut -d'"' -f2)
+          PKG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/typst/packages/preview/unimola"
+          mkdir -p "$PKG_DIR"
+          ln -sfn "$PWD" "$PKG_DIR/$VERSION"
+          typst compile example/demo.typ /tmp/unimola-demo.pdf
+
+      - name: Package release archive
+        run: |
+          VERSION=$(grep '^version' typst.toml | head -n1 | cut -d'"' -f2)
+          mkdir -p "dist/unimola-$VERSION"
+          cp -r typst.toml lib.typ src assets README.md LICENSE example "dist/unimola-$VERSION/"
+          rm -f "dist/unimola-$VERSION/example/"*.pdf
+          tar -C dist -czf "unimola-$VERSION.tar.gz" "unimola-$VERSION"
+
+      - name: Upload GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            assets/unimola.wasm
+            unimola-*.tar.gz

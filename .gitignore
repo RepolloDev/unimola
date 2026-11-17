@@ -1,0 +1,15 @@
+# Rust build artifacts
+/plugin/target/
+
+# Compiled WASM binary (built via Cargo or GitHub Actions release)
+/assets/*.wasm
+
+# Local drafts & docs
+/draft/
+
+# Compiled outputs
+*.pdf
+*.png
+*.svg
+!/docs/*.svg
+!/docs/*.png

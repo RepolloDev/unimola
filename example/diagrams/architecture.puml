@@ -1,0 +1,12 @@
+@startuml
+actor User
+rectangle "Typst Document" as Typst
+component "unimola (Typst)" as Pkg
+component "unimola.wasm" as Wasm
+
+User -> Typst : compiles .typ
+Typst -> Pkg : #unimola(...)
+Pkg -> Wasm : render_svg_json(src, opts)
+Wasm --> Pkg : { ok, svg }
+Pkg --> Typst : image(bytes(svg))
+@enduml
