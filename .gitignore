@@ -11,6 +11,8 @@
 *.pdf
 *.png
 *.svg
+!/gallery/*.png
+!/gallery/*.svg
 !/docs/*.svg
 !/docs/*.png
 !demo.pdf
